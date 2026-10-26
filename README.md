@@ -46,6 +46,13 @@ Perfect for SMPs or small multiplayer servers that shut down when no players are
 *   **Render Account** (for free 24/7 hosting)
 *   **Common Sense!** 🧠
 
+### 🐳 Deploying to Railway (or any Docker host)
+
+This repo ships with a `Dockerfile` (Node 22 LTS, production deps only).
+Railway / Render / Fly.io **auto-detect** it — just point the service at this
+repository and deploy, no build configuration needed. The panel listens on the
+platform-injected `PORT` automatically.
+
 ---
 
 ## 🚀 Setup Guide

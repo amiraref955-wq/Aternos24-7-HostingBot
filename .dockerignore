@@ -1,0 +1,9 @@
+# Never bake these into the image
+node_modules
+.git
+.gitignore
+.env
+*.log
+.DS_Store
+Thumbs.db
+README.md
