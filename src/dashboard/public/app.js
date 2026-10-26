@@ -176,8 +176,9 @@ function applyState(s) {
     });
   }
 
-  // Live View update (HUD + radar + inventory)
+  // Live View update (HUD + radar + inventory + 3D viewer overlay)
   if (typeof updateLiveView === 'function') updateLiveView(s);
+  if (typeof updateViewerOverlay === 'function') updateViewerOverlay(s);
 }
 
 function setStatus(kind, text) {
@@ -406,6 +407,13 @@ const SETTING_SECTIONS = [
     ]
   },
   {
+    title: 'Live 3D Viewer', keys: [
+      ['live-viewer.enabled', 'Enabled', 'bool'],
+      ['live-viewer.view-distance', 'View distance (2-8 chunks, higher = more RAM)', 'number'],
+      ['live-viewer.max-clients', 'Max simultaneous viewers', 'number']
+    ]
+  },
+  {
     title: 'Dashboard Security', keys: [
       ['dashboard.password', 'Panel password (change it!)', 'text']
     ]
@@ -587,6 +595,14 @@ function wireLiveView() {
   window.addEventListener('blur', () => {
     if (liveCtl.enabled) releaseAllControls();
   });
+
+  // 3D viewer iframe: lazy-load on demand (chunk streaming is heavy)
+  $('viewer-load-btn').addEventListener('click', () => {
+    $('viewer-frame').src = '/viewer/';
+    $('viewer-frame').classList.remove('hidden');
+    $('viewer-overlay').classList.add('hidden');
+    viewerLoaded = true;
+  });
 }
 
 function enableTakeover() {
@@ -739,10 +755,26 @@ async function postBotAction(url, body) {
   } catch (e) { /* ignore transient errors */ }
 }
 
+/* ---------- 3D viewer overlay (shows status over the iframe) ---------- */
+let viewerLoaded = false;
+function updateViewerOverlay(s) {
+  if (!s || viewerLoaded) return;
+  const overlayText = $('viewer-overlay-text');
+  const loadBtn = $('viewer-load-btn');
+  if (s.connected) {
+    overlayText.textContent = 'Bot is online — ready to load the 3D view';
+    if (loadBtn.classList.contains('hidden')) loadBtn.classList.remove('hidden');
+  } else {
+    overlayText.textContent = s.reconnecting
+      ? 'Reconnecting to the server...'
+      : 'Bot is offline — press Connect (Overview tab) first';
+    loadBtn.classList.add('hidden');
+  }
+}
+
 /* ---------- Live View renderer ---------- */
 function updateLiveView(s) {
   if (!s) return;
-
   // HUD
   const p = s.position;
   $('hud-position').textContent = p ? `X: ${p.x}  Y: ${p.y}  Z: ${p.z}` : '—';

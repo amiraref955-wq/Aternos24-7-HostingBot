@@ -24,6 +24,7 @@ const { BotManager } = require('./src/bot/botManager');
 const { notify } = require('./src/notifications');
 const { startDashboard } = require('./src/dashboard/server');
 const { startSelfPing, startMemoryMonitor } = require('./src/keepalive');
+const liveViewer = require('./src/bot/liveViewer');
 const readline = require('readline');
 
 // Capture every console.log into the dashboard feed
@@ -48,7 +49,16 @@ if (!config.dashboard || !config.dashboard.password || config.dashboard.password
 const botManager = new BotManager(config, notify);
 
 // Start the advanced web dashboard
-startDashboard(config, botManager, require('./src/config').saveConfig);
+const dash = startDashboard(config, botManager, require('./src/config').saveConfig);
+
+// Mount the real 3D live viewer on the SAME server/port (/viewer path)
+if (config['live-viewer'] && config['live-viewer'].enabled !== false) {
+  try {
+    liveViewer.attachServer(dash.app, dash.server);
+  } catch (e) {
+    log('Viewer', `Failed to mount 3D viewer: ${e.message}`);
+  }
+}
 
 // Keep-alive systems (Render self-ping + memory logging)
 startSelfPing();

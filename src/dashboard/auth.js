@@ -89,6 +89,15 @@ function authMiddleware() {
   };
 }
 
+/**
+ * Check a raw cookie header for a valid session.
+ * Used by non-Express surfaces (e.g. socket.io handshake for the 3D viewer).
+ */
+function isAuthed(cookieHeader) {
+  const token = parseCookies(cookieHeader)[COOKIE_NAME];
+  return !!(token && verifyToken(token));
+}
+
 /** Handle POST /api/login */
 function loginHandler(req, res) {
   const ip = req.socket.remoteAddress || 'unknown';
@@ -127,6 +136,7 @@ function sessionHandler(req, res) {
 
 module.exports = {
   authMiddleware,
+  isAuthed,
   loginHandler,
   logoutHandler,
   sessionHandler,

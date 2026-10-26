@@ -1,4 +1,4 @@
-# 🤖 Aternos 24/7 Hosting Bot — v3.0 Advanced Edition
+# 🤖 Aternos 24/7 Hosting Bot — v3.2 Advanced Edition
 
 A Minecraft bot that keeps an Aternos server online 24/7 by automatically joining it with a Mineflayer-based bot — now with a **live web control panel**, **modular architecture**, and **Telegram notifications**.
 
@@ -19,6 +19,11 @@ Perfect for SMPs or small multiplayer servers that shut down when no players are
      *    **HUD** — health/food/oxygen/XP bars, position, yaw/pitch, block under feet, full inventory grid
      *    **Manual control** — `WASD` to move, `Space` to jump, `Shift` to sneak, `Ctrl` to sprint, number keys to select hotbar, mouse clicks to attack / use items, middle-drag to look around
      *    See what the bot sees, in real time — and drive it yourself
+*    **🌍 Real 3D World View (NEW!)** — an actual live 3D render of the world from the bot's eyes:
+     *    Powered by prismarine-viewer — real block textures, sky, terrain, buildings, mobs
+     *    Runs on the SAME port as the panel (`/viewer` path) — works on Render's free tier
+     *    Session-protected (only logged-in panel users can watch)
+     *    Configurable view distance & max simultaneous viewers (Settings → Live 3D Viewer)
 *    **📲 Telegram Notifications** — get pinged on connect / disconnect / kick
 *    **🔔 Discord Notifications** — same reliable webhook system as before
 *    **🧩 Modular Codebase** — split into clean modules (bot manager, modules, notifications, dashboard)
@@ -59,10 +64,10 @@ We have made setup super easy! Check out the guide below:
    *   Change it in `settings.json` → `dashboard.password`, or from the panel: **Settings → Dashboard Security → Save**.
 3. Use the tabs:
    *   **Overview** — live status, controls (Connect / Disconnect / Reconnect), players, history, errors.
-   *   **Live View** — 🎮 manual control! Click **Take Control**, then use `WASD` to move, mouse on the radar to look around, left-click to attack, right-click to use the held item, number keys `1`–`9` to pick hotbar slots. See the radar + HUD + inventory in real time.
+   *   **Live View** — 🎮 manual control + 🌍 real 3D world view! Click **Load 3D View** to see the world through the bot's eyes (first load takes a few seconds). Click **Take Control** to drive the bot: `WASD` to move, mouse on the radar to look around, left-click to attack, right-click to use the held item, number keys `1`–`9` to pick hotbar slots.
    *   **Chat** — read server chat live and send messages (prefix `/` to run commands).
    *   **Console** — full realtime bot console.
-   *   **Settings** — edit everything (server, account, messages, movement, notifications) and save. Server/account changes need a **Reconnect** to apply; everything else applies live.
+   *   **Settings** — edit everything (server, account, messages, movement, notifications, 3D viewer) and save. Server/account changes need a **Reconnect** to apply; everything else applies live.
 
 ---
 

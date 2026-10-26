@@ -338,6 +338,13 @@ class BotManager {
       emitState('spawn');
       this.notify(cfg, 'connect', `Connected to \`${cfg.server.ip}\``);
 
+      // Attach the live 3D viewer (best effort - never block the bot)
+      try {
+        require('./liveViewer').setBot(bot);
+      } catch (e) {
+        log('Viewer', `Failed to attach viewer: ${e.message}`);
+      }
+
       // Use bot.version (auto-detected) so minecraft-data always matches the server
       const mcData = require('minecraft-data')(bot.version);
       const defaultMove = new Movements(bot, mcData);
@@ -513,6 +520,11 @@ class BotManager {
       this.clearAllIntervals();
       this.spawnHandled = false;
       emitState('end');
+
+      // Drop 3D viewer clients - they will see "bot offline" until reconnect
+      try {
+        require('./liveViewer').clearBot();
+      } catch (e) { /* ignore */ }
 
       if (!wasManual && reason !== 'Periodic Rejoin') {
         pushHistory({ event: 'disconnect', detail: String(reason || 'Unknown').slice(0, 200) });

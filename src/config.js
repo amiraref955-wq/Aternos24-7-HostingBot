@@ -79,6 +79,11 @@ const DEFAULTS = {
   },
   chat: {
     respond: true
+  },
+  'live-viewer': {
+    enabled: true,
+    'view-distance': 3,
+    'max-clients': 2
   }
 };
 

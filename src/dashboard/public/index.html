@@ -112,6 +112,23 @@
         <button id="live-toggle" class="btn btn-primary">▶ Take Control</button>
       </section>
 
+      <!-- 3D first-person world view -->
+      <section class="card live-3d-card">
+        <div class="card-title">🌍 3D World View — what the bot actually sees</div>
+        <div class="viewer-wrap">
+          <iframe id="viewer-frame" class="viewer-frame hidden" src="about:blank" allow="fullscreen"></iframe>
+          <div id="viewer-overlay" class="viewer-overlay">
+            <div class="viewer-overlay-inner">
+              <div class="viewer-overlay-icon">🌍</div>
+              <div id="viewer-overlay-text">Real 3D first-person view of the bot's world</div>
+              <button id="viewer-load-btn" class="btn btn-primary">▶ Load 3D View</button>
+              <div class="viewer-overlay-hint">First load may take 10-30 seconds (downloads world data)</div>
+            </div>
+          </div>
+        </div>
+        <div class="control-hint">The camera is the bot's eyes. If chunks look missing, wait a moment or move the bot. If it shows a black screen, make sure the bot is online.</div>
+      </section>
+
       <section class="live-grid">
         <!-- Radar -->
         <div class="card live-radar-card">
