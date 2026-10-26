@@ -104,6 +104,26 @@ function deepMerge(target, source) {
   return out;
 }
 
+// In-place merge: MUTATES target instead of returning a new object.
+// CRITICAL: after boot, index.js / botManager / the dashboard server all
+// hold references to the same config object. saveConfig() must never
+// reassign the module-level config, otherwise every other module keeps
+// reading the stale pre-save values (panel shows old settings right
+// after a successful save!).
+function mergeInto(target, source) {
+  for (const key of Object.keys(source || {})) {
+    const sv = source[key];
+    if (isPlainObject(sv) && isPlainObject(target[key])) {
+      mergeInto(target[key], sv);
+    } else if (Array.isArray(sv)) {
+      target[key] = [...sv];
+    } else {
+      target[key] = sv;
+    }
+  }
+  return target;
+}
+
 /* ============================================================
  *  Persistence location
  * ============================================================
@@ -169,10 +189,12 @@ function getConfig() {
   return config;
 }
 
-// Merge a partial config object into the live config and persist to disk.
+// Merge a partial config object into the LIVE config (in place!) and
+// persist to disk. All existing references see the change immediately.
 // Returns the merged config.
 function saveConfig(partial) {
-  config = deepMerge(config, partial);
+  if (!config) loadConfig();
+  mergeInto(config, partial || {});
   fs.writeFileSync(SETTINGS_PATH, JSON.stringify(config, null, 2), 'utf8');
   return config;
 }
