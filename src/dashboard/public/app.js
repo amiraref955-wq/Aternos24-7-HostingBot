@@ -137,6 +137,12 @@ async function pollStatus() {
 function applyState(s) {
   if (!s) return;
 
+  // App version chip (lets the user verify the deployed code version)
+  if (s.version) {
+    const v = $('app-version');
+    if (v) v.textContent = 'v' + s.version;
+  }
+
   // Persisted-storage hint (Settings tab)
   if (s.storage) {
     state.storage = s.storage;

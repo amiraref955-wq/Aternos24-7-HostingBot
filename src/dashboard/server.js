@@ -16,6 +16,8 @@ const auth = require('./auth');
 const { formatUptime } = require('../utils/helpers');
 const { DATA_DIR } = require('../config');
 
+const APP_VERSION = require('../../package.json').version;
+
 function startDashboard(config, botManager, saveConfigFn) {
   const app = express();
   app.use(express.json({ limit: '256kb' }));
@@ -128,7 +130,8 @@ function startDashboard(config, botManager, saveConfigFn) {
       storage: {
         persistent: Boolean(DATA_DIR),
         path: DATA_DIR || 'container (ephemeral - attach a volume!)'
-      }
+      },
+      version: APP_VERSION
     });
   });
 
