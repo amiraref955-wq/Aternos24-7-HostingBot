@@ -8,6 +8,7 @@ const state = {
   es: null,           // EventSource
   statusTimer: null,
   settingsCache: null,
+  storage: null,      // {persistent, path} from /api/status
   chatCount: 0,
   consoleCount: 0
 };
@@ -135,6 +136,12 @@ async function pollStatus() {
 
 function applyState(s) {
   if (!s) return;
+
+  // Persisted-storage hint (Settings tab)
+  if (s.storage) {
+    state.storage = s.storage;
+    updateStorageHint(s.storage);
+  }
 
   // Status pill
   if (s.connected) setStatus('online', 'Online & Running');
@@ -444,9 +451,23 @@ async function loadSettings() {
   } catch (e) { /* ignore */ }
 }
 
+function updateStorageHint(storage) {
+  const box = $('settings-storage');
+  if (!box || !storage) return;
+  box.classList.remove('hidden', 'ok', 'warn');
+  if (storage.persistent) {
+    box.classList.add('ok');
+    box.textContent = `\u2713 Persistent storage: settings survive restarts & redeploys (${storage.path})`;
+  } else {
+    box.classList.add('warn');
+    box.textContent = '\u26a0 Ephemeral storage: settings reset on every restart/redeploy. On Railway: create a Volume mounted at /data.';
+  }
+}
+
 function renderSettings(cfg) {
   const form = $('settings-form');
   form.innerHTML = '';
+  if (state.storage) updateStorageHint(state.storage);
 
   SETTING_SECTIONS.forEach(section => {
     const fs = document.createElement('fieldset');

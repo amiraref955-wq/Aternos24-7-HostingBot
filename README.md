@@ -53,6 +53,22 @@ Railway / Render / Fly.io **auto-detect** it — just point the service at this
 repository and deploy, no build configuration needed. The panel listens on the
 platform-injected `PORT` automatically.
 
+#### 💾 Persistent settings (IMPORTANT on Railway!)
+
+Container filesystems are **ephemeral** — without a volume, every restart or
+redeploy resets `settings.json` to the copy baked into the image, and changes
+you made from the panel are lost. To keep them:
+
+1. In Railway, open your service → **Volumes** tab → **+ New Volume**
+2. Mount it at **`/data`**
+3. Redeploy — done. The app auto-detects the volume (`RAILWAY_VOLUME_MOUNT_PATH`
+   injected by Railway, or set `DATA_DIR` manually on other hosts), seeds it
+   from the bundled `settings.json` on first boot, and persists every panel
+   change there from then on.
+
+The Settings tab shows a green banner when persistence is active and a yellow
+warning when it is not.
+
 ---
 
 ## 🚀 Setup Guide

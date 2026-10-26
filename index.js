@@ -17,7 +17,7 @@
  *  Entry point: wires everything together and installs crash recovery.
  */
 
-const { loadConfig, getConfig } = require('./src/config');
+const { loadConfig, getConfig, DATA_DIR, SETTINGS_PATH } = require('./src/config');
 const { initConsoleCapture, log } = require('./src/utils/logger');
 const { botState, pushError, pushHistory } = require('./src/state');
 const { BotManager } = require('./src/bot/botManager');
@@ -140,7 +140,16 @@ console.log(`   Auto-Reconnect  : ${config.utils['auto-reconnect'] ? 'Enabled' :
 console.log(`   Dashboard       : ${config.dashboard && config.dashboard.enabled ? 'Enabled (password protected)' : 'Disabled'}`);
 console.log(`   Discord notify  : ${config.discord && config.discord.enabled ? 'Enabled' : 'Disabled'}`);
 console.log(`   Telegram notify : ${config.telegram && config.telegram.enabled ? 'Enabled' : 'Disabled'}`);
+console.log(`   Settings file   : ${SETTINGS_PATH}${DATA_DIR ? ' (persistent)' : ''}`);
 console.log('='.repeat(56));
+
+if (!DATA_DIR) {
+  console.log('');
+  console.log('   [WARN] No persistent volume attached - settings changes made in the');
+  console.log('          panel will be LOST on every restart / redeploy!');
+  console.log('          On Railway: attach a Volume mounted at /data to keep them.');
+}
+console.log('');
 
 pushHistory({ event: 'startup', detail: `Bot v3.0 started -> ${config.server.ip}:${config.server.port}` });
 

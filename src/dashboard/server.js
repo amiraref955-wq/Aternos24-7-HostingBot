@@ -14,6 +14,7 @@ const { log } = require('../utils/logger');
 const { botState, bus, snapshot, emitState, pushChat } = require('../state');
 const auth = require('./auth');
 const { formatUptime } = require('../utils/helpers');
+const { DATA_DIR } = require('../config');
 
 function startDashboard(config, botManager, saveConfigFn) {
   const app = express();
@@ -123,7 +124,11 @@ function startDashboard(config, botManager, saveConfigFn) {
       history: botState.connectionHistory.slice(-30),
       errors: botState.errors.slice(-20),
       discordEnabled: !!(config.discord && config.discord.enabled),
-      telegramEnabled: !!(config.telegram && config.telegram.enabled)
+      telegramEnabled: !!(config.telegram && config.telegram.enabled),
+      storage: {
+        persistent: Boolean(DATA_DIR),
+        path: DATA_DIR || 'container (ephemeral - attach a volume!)'
+      }
     });
   });
 

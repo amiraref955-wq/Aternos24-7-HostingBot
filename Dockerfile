@@ -18,6 +18,14 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 # 2) Copy the application source (runs as unprivileged 'node' user)
 COPY --chown=node:node . .
+
+# 3) Persistent data mount point. Railway: attach a Volume mounted at
+#    /data (the platform then injects RAILWAY_VOLUME_MOUNT_PATH itself).
+#    Docker hosts: run with `-v yourdata:/data`.
+#    Pre-creating it with node ownership lets the unprivileged user write
+#    to a freshly mounted volume.
+ENV DATA_DIR=/data
+RUN mkdir -p /data && chown node:node /data
 USER node
 
 # Railway injects PORT automatically; 5000 is the local default.
