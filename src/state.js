@@ -25,8 +25,17 @@ const botState = {
   // Live in-game data (updated on spawn/health events)
   health: null,
   food: null,
+  oxygenLevel: null,
+  experience: null,
+  level: null,
   gameMode: null,
   position: null,
+  yaw: null,
+  pitch: null,
+  heldSlot: null,
+  inventory: [],           // [{ slot, name, count, displayName }]
+  nearbyEntities: [],       // [{ id, type, name, pos, distance, kind }]
+  blockUnder: null,         // { name, position }
   players: {},        // { username: { ping, gamemode } }
 
   // Ring buffers (for dashboard)
@@ -96,8 +105,17 @@ function snapshot() {
     manualStop: botState.manualStop,
     health: botState.health,
     food: botState.food,
+    oxygenLevel: botState.oxygenLevel,
+    experience: botState.experience,
+    level: botState.level,
     gameMode: botState.gameMode,
     position: botState.position,
+    yaw: botState.yaw,
+    pitch: botState.pitch,
+    heldSlot: botState.heldSlot,
+    inventory: botState.inventory,
+    nearbyEntities: botState.nearbyEntities,
+    blockUnder: botState.blockUnder,
     players: botState.players,
     memoryUsage: Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100,
     uptime: Math.floor((Date.now() - botState.startTime) / 1000)

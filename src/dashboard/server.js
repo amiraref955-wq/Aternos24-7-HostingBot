@@ -153,6 +153,62 @@ function startDashboard(config, botManager, saveConfigFn) {
     res.json({ ok: true });
   });
 
+  // ---------- Live View (manual control) ----------
+
+  app.post('/api/bot/control', (req, res) => {
+    const { state, value } = req.body || {};
+    if (!state) return res.status(400).json({ ok: false, error: 'state required' });
+    const err = botManager.setControl(state, !!value);
+    if (err) return res.status(400).json({ ok: false, error: err });
+    res.json({ ok: true });
+  });
+
+  app.post('/api/bot/clear-controls', (req, res) => {
+    const err = botManager.clearControls();
+    if (err) return res.status(400).json({ ok: false, error: err });
+    res.json({ ok: true });
+  });
+
+  app.post('/api/bot/look', (req, res) => {
+    const { yaw, pitch } = req.body || {};
+    const err = botManager.look(Number(yaw), Number(pitch));
+    if (err) return res.status(400).json({ ok: false, error: err });
+    res.json({ ok: true });
+  });
+
+  app.post('/api/bot/look-at', (req, res) => {
+    const { x, y, z } = req.body || {};
+    if (x == null || y == null || z == null) return res.status(400).json({ ok: false, error: 'x, y, z required' });
+    const err = botManager.lookAt(Number(x), Number(y), Number(z));
+    if (err) return res.status(400).json({ ok: false, error: err });
+    res.json({ ok: true });
+  });
+
+  app.post('/api/bot/attack', (req, res) => {
+    const err = botManager.attack();
+    if (err) return res.status(400).json({ ok: false, error: err });
+    res.json({ ok: true });
+  });
+
+  app.post('/api/bot/activate', (req, res) => {
+    const err = botManager.activateItem();
+    if (err) return res.status(400).json({ ok: false, error: err });
+    res.json({ ok: true });
+  });
+
+  app.post('/api/bot/hotbar', (req, res) => {
+    const { slot } = req.body || {};
+    const err = botManager.setHotbar(Number(slot));
+    if (err) return res.status(400).json({ ok: false, error: err });
+    res.json({ ok: true });
+  });
+
+  app.post('/api/bot/drop', (req, res) => {
+    const err = botManager.dropHeld();
+    if (err) return res.status(400).json({ ok: false, error: err });
+    res.json({ ok: true });
+  });
+
   // ---------- logs ----------
 
   app.get('/api/logs', (req, res) => {

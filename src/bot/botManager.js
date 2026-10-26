@@ -14,6 +14,28 @@ const {
   botState, pushError, pushChat, pushHistory, emitState
 } = require('../state');
 
+// Classify a mineflayer entity into a radar-friendly kind
+function entityKind(en) {
+  if (!en) return 'unknown';
+  if (en.type === 'player') return 'player';
+  const HOSTILE = ['zombie', 'skeleton', 'creeper', 'spider', 'enderman', 'witch',
+    'blaze', 'ghast', 'slime', 'magma_cube', 'silverfish', 'cave_spider',
+    'guardian', 'elder_guardian', 'shulker', 'vex', 'vindicator', 'evoker',
+    'pillager', 'ravager', 'hoglin', 'piglin', 'zoglin', 'warden', 'wither', 'phantom'];
+  const PASSIVE = ['cow', 'sheep', 'pig', 'chicken', 'horse', 'donkey', 'mule', 'llama',
+    'trader_llama', 'cat', 'ocelot', 'wolf', 'parrot', 'rabbit', 'fox', 'turtle',
+    'cod', 'salmon', 'pufferfish', 'tropical_fish', 'squid', 'glow_squid',
+    'axolotl', 'goat', 'frog', 'tadpole', 'allay', 'sniffer', 'camel', 'armadillo',
+    'villager', 'wandering_trader', 'bat', 'mooshroom', 'bee', 'panda', 'polar_bear', 'strider'];
+  const name = String(en.name || en.type || '').toLowerCase();
+  if (HOSTILE.includes(name)) return 'hostile';
+  if (PASSIVE.includes(name)) return 'passive';
+  if (en.type === 'item' || en.type === 'item_entity') return 'item';
+  if (en.type === 'mob' || en.kind === 'hostile') return 'hostile';
+  if (en.type === 'animal') return 'passive';
+  return en.type || 'unknown';
+}
+
 class BotManager {
   constructor(config, notifyFn) {
     this.config = config;
@@ -146,6 +168,78 @@ class BotManager {
     } catch (e) {
       return e.message;
     }
+  }
+
+  // ---------- live manual control (dashboard "Live" tab) ----------
+
+  /**
+   * Set a movement control state.
+   * @param {string} state forward|back|left|right|jump|sneak|sprint
+   * @param {boolean} value true=pressed, false=released
+   */
+  setControl(state, value) {
+    if (!this.isConnected() || typeof this.bot.setControlState !== 'function') return 'Bot is not connected';
+    if (!['forward', 'back', 'left', 'right', 'jump', 'sneak', 'sprint'].includes(state)) return 'Invalid control state';
+    try {
+      this.bot.setControlState(state, !!value);
+      return null;
+    } catch (e) { return e.message; }
+  }
+
+  /** Release all movement control states */
+  clearControls() {
+    if (!this.isConnected()) return 'Bot is not connected';
+    try { this.bot.clearControlStates(); return null; } catch (e) { return e.message; }
+  }
+
+  /** Set look direction (yaw/pitch in radians) */
+  look(yaw, pitch) {
+    if (!this.isConnected()) return 'Bot is not connected';
+    if (typeof yaw !== 'number' || typeof pitch !== 'number') return 'Invalid yaw/pitch';
+    try { this.bot.look(yaw, pitch, false); return null; } catch (e) { return e.message; }
+  }
+
+  /** Look at a specific world coordinate */
+  lookAt(x, y, z) {
+    if (!this.isConnected()) return 'Bot is not connected';
+    try {
+      const vec3 = require('vec3');
+      this.bot.lookAt(vec3(Number(x), Number(y), Number(z)));
+      return null;
+    } catch (e) { return e.message; }
+  }
+
+  /** Attack the entity currently in line of sight, or nothing if none */
+  attack() {
+    if (!this.isConnected()) return 'Bot is not connected';
+    try {
+      const ent = this.bot.entityAtCursor(4);
+      if (ent) this.bot.attack(ent);
+      return ent ? null : 'Nothing in range';
+    } catch (e) { return e.message; }
+  }
+
+  /** Right-click / activate held item */
+  activateItem() {
+    if (!this.isConnected()) return 'Bot is not connected';
+    try { this.bot.activateItem(); return null; } catch (e) { return e.message; }
+  }
+
+  /** Set hotbar slot 0-8 */
+  setHotbar(slot) {
+    if (!this.isConnected()) return 'Bot is not connected';
+    if (typeof slot !== 'number' || slot < 0 || slot > 8) return 'Invalid slot';
+    try { this.bot.setQuickBarSlot(slot); return null; } catch (e) { return e.message; }
+  }
+
+  /** Drop / toss the held item stack */
+  dropHeld() {
+    if (!this.isConnected()) return 'Bot is not connected';
+    try {
+      const held = this.bot.inventory.slots[this.bot.quickBarSlot + 36];
+      if (held) this.bot.tossStack(held);
+      return held ? null : 'Nothing to drop';
+    } catch (e) { return e.message; }
   }
 
   // ---------- core lifecycle ----------
@@ -298,9 +392,75 @@ class BotManager {
     bot.on('health', () => {
       botState.health = bot.health;
       botState.food = bot.food;
+      botState.oxygenLevel = bot.oxygenLevel;
+      botState.experience = bot.experience;
+      botState.level = bot.level;
       botState.gameMode = bot.game ? botState.gameMode : botState.gameMode;
       emitState('health');
     });
+
+    // High-rate live telemetry for the Live View tab (position/yaw/pitch/inventory/entities)
+    this.addInterval(() => {
+      if (!this.isConnected() || !this.bot.entity) return;
+      try {
+        const e = this.bot.entity;
+        botState.position = {
+          x: Math.floor(e.position.x),
+          y: Math.floor(e.position.y),
+          z: Math.floor(e.position.z)
+        };
+        botState.yaw = e.yaw;
+        botState.pitch = e.pitch;
+        botState.heldSlot = this.bot.quickBarSlot;
+
+        // Inventory snapshot
+        const items = (this.bot.inventory && this.bot.inventory.items) ? this.bot.inventory.items() : [];
+        botState.inventory = items.map(it => ({
+          slot: it.slot,
+          name: it.name,
+          count: it.count,
+          displayName: (it.displayName || it.name || '').toString()
+        }));
+
+        // Nearby entities (within 32 blocks) - filter to keep payload small
+        const all = Object.values(this.bot.entities || {});
+        const me = e.position;
+        botState.nearbyEntities = all
+          .filter(en => {
+            if (!en || !en.position || en === e) return false;
+            if (!en.type || en.type === 'object') return false;
+            const dx = en.position.x - me.x;
+            const dz = en.position.z - me.z;
+            const dy = en.position.y - me.y;
+            return (dx * dx + dy * dy + dz * dz) <= 32 * 32;
+          })
+          .map(en => {
+            const dx = en.position.x - me.x;
+            const dy = en.position.y - me.y;
+            const dz = en.position.z - me.z;
+            const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            const kind = entityKind(en);
+            return {
+              id: en.id,
+              type: en.type,
+              name: (en.username || en.name || en.displayName || en.type || '').toString(),
+              pos: { x: en.position.x, y: en.position.y, z: en.position.z },
+              dx: dx, dz: dz,
+              distance: Math.round(distance * 10) / 10,
+              kind
+            };
+          })
+          .slice(0, 60); // cap
+
+        // Block under the bot
+        try {
+          const b = this.bot.blockAt(e.position.offset(0, -1, 0));
+          if (b) botState.blockUnder = { name: b.name, position: { x: b.position.x, y: b.position.y, z: b.position.z } };
+        } catch (_) { /* ignore */ }
+
+        emitState('live-tick');
+      } catch (_) { /* ignore - don't crash telemetry loop */ }
+    }, 200);
 
     bot.on('messagestr', (message) => {
       pushChat({ text: message });

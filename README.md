@@ -14,6 +14,11 @@ Perfect for SMPs or small multiplayer servers that shut down when no players are
      *    Live console stream (realtime, via Server-Sent Events)
      *    Player list, bot position, health/food, memory, reconnect stats
      *    Full settings editor — change settings without touching files
+*    **🎮 Live View (NEW!)** — first-person-style manual control of the bot from your browser:
+     *    **Radar** — top-down view of every player, mob, and dropped item within 32 blocks (auto-rotates with the bot's facing direction)
+     *    **HUD** — health/food/oxygen/XP bars, position, yaw/pitch, block under feet, full inventory grid
+     *    **Manual control** — `WASD` to move, `Space` to jump, `Shift` to sneak, `Ctrl` to sprint, number keys to select hotbar, mouse clicks to attack / use items, middle-drag to look around
+     *    See what the bot sees, in real time — and drive it yourself
 *    **📲 Telegram Notifications** — get pinged on connect / disconnect / kick
 *    **🔔 Discord Notifications** — same reliable webhook system as before
 *    **🧩 Modular Codebase** — split into clean modules (bot manager, modules, notifications, dashboard)
@@ -54,6 +59,7 @@ We have made setup super easy! Check out the guide below:
    *   Change it in `settings.json` → `dashboard.password`, or from the panel: **Settings → Dashboard Security → Save**.
 3. Use the tabs:
    *   **Overview** — live status, controls (Connect / Disconnect / Reconnect), players, history, errors.
+   *   **Live View** — 🎮 manual control! Click **Take Control**, then use `WASD` to move, mouse on the radar to look around, left-click to attack, right-click to use the held item, number keys `1`–`9` to pick hotbar slots. See the radar + HUD + inventory in real time.
    *   **Chat** — read server chat live and send messages (prefix `/` to run commands).
    *   **Console** — full realtime bot console.
    *   **Settings** — edit everything (server, account, messages, movement, notifications) and save. Server/account changes need a **Reconnect** to apply; everything else applies live.

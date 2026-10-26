@@ -41,6 +41,7 @@
 
     <nav class="tabs">
       <button class="tab active" data-tab="overview">📊 Overview</button>
+      <button class="tab" data-tab="live">🎮 Live View</button>
       <button class="tab" data-tab="chat">💬 Chat</button>
       <button class="tab" data-tab="console">🖥️ Console</button>
       <button class="tab" data-tab="settings">⚙️ Settings</button>
@@ -98,6 +99,81 @@
       <section class="card">
         <div class="card-title">⚠️ Recent Errors</div>
         <ul id="errors-list" class="errors-list"><li class="dim">No errors 🎉</li></ul>
+      </section>
+    </main>
+
+    <!-- ======== LIVE VIEW TAB ======== -->
+    <main id="tab-live" class="tab-page">
+      <section class="card live-banner" id="live-banner">
+        <div>
+          <span class="live-banner-icon">🎮</span>
+          <span id="live-banner-text">Manual Control — see what the bot sees and drive it directly from this panel.</span>
+        </div>
+        <button id="live-toggle" class="btn btn-primary">▶ Take Control</button>
+      </section>
+
+      <section class="live-grid">
+        <!-- Radar -->
+        <div class="card live-radar-card">
+          <div class="card-title">📡 Radar (Top-Down, 32 blocks)</div>
+          <canvas id="radar" width="500" height="500" class="radar-canvas"></canvas>
+          <div class="radar-legend">
+            <span class="legend-item"><span class="legend-dot dot-self"></span>Bot</span>
+            <span class="legend-item"><span class="legend-dot dot-player"></span>Player</span>
+            <span class="legend-item"><span class="legend-dot dot-hostile"></span>Hostile</span>
+            <span class="legend-item"><span class="legend-dot dot-passive"></span>Passive</span>
+            <span class="legend-item"><span class="legend-dot dot-item"></span>Item</span>
+          </div>
+        </div>
+
+        <!-- HUD -->
+        <div class="card live-hud-card">
+          <div class="card-title">🧭 HUD</div>
+          <div class="hud-section">
+            <div class="hud-label">Position</div>
+            <div class="hud-value" id="hud-position">—</div>
+          </div>
+          <div class="hud-section">
+            <div class="hud-label">Facing (yaw / pitch)</div>
+            <div class="hud-value" id="hud-facing">—</div>
+          </div>
+          <div class="hud-section">
+            <div class="hud-label">Block under feet</div>
+            <div class="hud-value" id="hud-block">—</div>
+          </div>
+          <div class="hud-section">
+            <div class="hud-label">Health / Food / Oxygen</div>
+            <div class="hud-bars">
+              <div class="bar-row"><span>❤</span><div class="bar"><div class="bar-fill bar-red" id="bar-health"></div></div><span id="val-health">—</span></div>
+              <div class="bar-row"><span>🍗</span><div class="bar"><div class="bar-fill bar-orange" id="bar-food"></div></div><span id="val-food">—</span></div>
+              <div class="bar-row"><span>🫧</span><div class="bar"><div class="bar-fill bar-blue" id="bar-oxygen"></div></div><span id="val-oxygen">—</span></div>
+              <div class="bar-row"><span>⭐</span><div class="bar"><div class="bar-fill bar-green" id="bar-xp"></div></div><span id="val-xp">L0</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inventory -->
+      <section class="card">
+        <div class="card-title">🎒 Inventory</div>
+        <div id="inv-grid" class="inv-grid"></div>
+      </section>
+
+      <!-- Controls help -->
+      <section class="card">
+        <div class="card-title">⌨️ Manual Controls</div>
+        <div class="live-controls-grid">
+          <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</div>
+          <div><kbd>Space</kbd> Jump</div>
+          <div><kbd>Shift</kbd> Sneak</div>
+          <div><kbd>Ctrl</kbd> Sprint</div>
+          <div><kbd>1</kbd>–<kbd>9</kbd> Hotbar</div>
+          <div><kbd>Mouse</kbd> Look</div>
+          <div><kbd>Left click</kbd> Attack</div>
+          <div><kbd>Right click</kbd> Use item</div>
+          <div><kbd>Q</kbd> Drop item</div>
+        </div>
+        <div class="control-hint">Manual movement overrides the bot's anti-AFK scripts while keys are held. Releasing keys returns control to the scripts. Click <strong>Take Control</strong> above to enable keyboard input on this page.</div>
       </section>
     </main>
 
