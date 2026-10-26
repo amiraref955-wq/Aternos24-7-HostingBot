@@ -21,6 +21,8 @@ const botState = {
   manualStop: false,
   forceReconnect: false,
   wasThrottled: false,
+  wasDuplicateLogin: false,
+  duplicateLoginKicks: 0,
 
   // Live in-game data (updated on spawn/health events)
   health: null,

@@ -90,6 +90,17 @@ class BotManager {
       return throttleDelay;
     }
 
+    // Back off after a duplicate-login kick: stop the endless tug-of-war
+    // between two sessions sharing one username. The OTHER session then
+    // holds the name and stabilizes instead of both sides kicking each
+    // other every few seconds.
+    if (botState.wasDuplicateLogin) {
+      botState.wasDuplicateLogin = false;
+      const dupDelay = 45000 + Math.floor(Math.random() * 30000);
+      log('Bot', `Duplicate-login kick - backing off ${Math.round(dupDelay / 1000)}s to avoid the username war`);
+      return dupDelay;
+    }
+
     const utils = this.config.utils || {};
     const baseDelay = utils['auto-reconnect-delay'] || 3000;
     const maxDelay = utils['max-reconnect-delay'] || 120000;
@@ -501,6 +512,21 @@ class BotManager {
       if (reasonStr.includes('throttl') || reasonStr.includes('wait before reconnect') || reasonStr.includes('too fast')) {
         log('Bot', 'Throttle kick detected - will use extended reconnect delay');
         botState.wasThrottled = true;
+      }
+
+      // Duplicate-login war: another session/bot is using the SAME username.
+      // Typical when the bot is deployed on TWO hosts at once (Render + Railway,
+      // two services, or a local copy) - each login kicks the other forever.
+      if (reasonStr.includes('another location') || reasonStr.includes('already logged in') || reasonStr.includes('you logged in from')) {
+        botState.wasDuplicateLogin = true;
+        botState.duplicateLoginKicks = (botState.duplicateLoginKicks || 0) + 1;
+        log('Bot', 'DUPLICATE LOGIN detected - another session is using this username!');
+        log('Bot', '>> If this bot runs on two hosts (Render + Railway, two services, local copy), STOP one of them.');
+        pushHistory({
+          event: 'duplicate-login',
+          detail: `Two bots share the username "${botState.username}" (kick #${botState.duplicateLoginKicks}). Stop the other instance!`
+        });
+        this.notify(cfg, 'duplicate-login', 'Another session is using the bot username - stop the second instance!');
       }
 
       this.notify(cfg, 'kick', kickReason.slice(0, 300));
