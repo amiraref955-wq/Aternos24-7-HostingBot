@@ -89,6 +89,22 @@
       "chat": false
     }
   },
+  "telegram": {
+    "enabled": false,
+    "botToken": "",
+    "chatId": "",
+    "events": {
+      "connect": true,
+      "disconnect": true,
+      "kick": true,
+      "errors": false
+    }
+  },
+  "dashboard": {
+    "enabled": true,
+    "password": "changeme",
+    "title": "Aternos Bot Panel"
+  },
   "chat": {
     "respond": true
   }

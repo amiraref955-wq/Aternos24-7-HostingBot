@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AFK Bot Panel</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- ============ LOGIN VIEW ============ -->
+  <div id="login-view" class="login-wrap hidden">
+    <div class="login-card">
+      <div class="login-logo">🤖</div>
+      <h1 id="login-title">Bot Control Panel</h1>
+      <p class="login-sub">Enter your dashboard password to continue</p>
+      <form id="login-form">
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" autofocus>
+        <button type="submit" class="btn btn-primary btn-block">Unlock Panel</button>
+        <div id="login-error" class="login-error hidden"></div>
+      </form>
+      <a href="/tutorial" class="login-guide">📘 Setup Guide</a>
+    </div>
+  </div>
+
+  <!-- ============ MAIN PANEL ============ -->
+  <div id="main-view" class="hidden">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="logo">🤖</span>
+        <span id="panel-title" class="panel-title">Bot Panel</span>
+        <span id="status-pill" class="pill pill-offline">
+          <span class="pill-dot"></span><span id="status-text">Offline</span>
+        </span>
+      </div>
+      <div class="topbar-right">
+        <span id="uptime-label" class="topbar-uptime">0h 0m 0s</span>
+        <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="overview">📊 Overview</button>
+      <button class="tab" data-tab="chat">💬 Chat</button>
+      <button class="tab" data-tab="console">🖥️ Console</button>
+      <button class="tab" data-tab="settings">⚙️ Settings</button>
+    </nav>
+
+    <!-- ======== OVERVIEW TAB ======== -->
+    <main id="tab-overview" class="tab-page active">
+      <section class="controls-bar card">
+        <div class="controls-buttons">
+          <button id="btn-connect" class="btn btn-success">▶ Connect</button>
+          <button id="btn-disconnect" class="btn btn-danger">⏹ Disconnect</button>
+          <button id="btn-reconnect" class="btn btn-warning">🔄 Reconnect</button>
+        </div>
+        <div id="control-hint" class="control-hint">Disconnect removes the bot from the server and keeps it out until you press Connect.</div>
+      </section>
+
+      <section class="stats-grid">
+        <div class="card stat">
+          <div class="stat-label">Server</div>
+          <div class="stat-value" id="stat-server">—</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Bot / MC Version</div>
+          <div class="stat-value" id="stat-version">—</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Position</div>
+          <div class="stat-value" id="stat-position">—</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Health / Food</div>
+          <div class="stat-value" id="stat-health">—</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Memory</div>
+          <div class="stat-value" id="stat-memory">—</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Reconnects</div>
+          <div class="stat-value" id="stat-reconnects">0</div>
+        </div>
+      </section>
+
+      <section class="two-col">
+        <div class="card">
+          <div class="card-title">👥 Players Online <span id="players-count" class="badge">0</span></div>
+          <ul id="players-list" class="players-list"><li class="dim">Nobody yet</li></ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🕘 Connection History</div>
+          <ul id="history-list" class="history-list"><li class="dim">No events yet</li></ul>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-title">⚠️ Recent Errors</div>
+        <ul id="errors-list" class="errors-list"><li class="dim">No errors 🎉</li></ul>
+      </section>
+    </main>
+
+    <!-- ======== CHAT TAB ======== -->
+    <main id="tab-chat" class="tab-page">
+      <section class="card chat-card">
+        <div class="card-title">💬 Live Server Chat</div>
+        <div id="chat-feed" class="chat-feed"></div>
+        <form id="chat-form" class="chat-form">
+          <input type="text" id="chat-input" placeholder="Type a message or /command..." maxlength="256" autocomplete="off">
+          <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+        <div class="chat-note">Messages starting with <code>/</code> are sent as server commands.</div>
+      </section>
+    </main>
+
+    <!-- ======== CONSOLE TAB ======== -->
+    <main id="tab-console" class="tab-page">
+      <section class="card chat-card">
+        <div class="card-title">
+          🖥️ Live Console
+          <label class="autoscroll-label"><input type="checkbox" id="console-autoscroll" checked> Auto-scroll</label>
+        </div>
+        <div id="console-feed" class="console-feed"></div>
+      </section>
+    </main>
+
+    <!-- ======== SETTINGS TAB ======== -->
+    <main id="tab-settings" class="tab-page">
+      <section class="card">
+        <div class="card-title">⚙️ Bot Settings</div>
+        <div id="settings-form" class="settings-form"></div>
+        <div class="settings-actions">
+          <button id="settings-save" class="btn btn-primary">💾 Save Settings</button>
+          <button id="settings-reload" class="btn btn-ghost">↩ Reload from Server</button>
+        </div>
+        <div id="settings-msg" class="settings-msg hidden"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

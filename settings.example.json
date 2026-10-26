@@ -1,0 +1,106 @@
+{
+  "name": "My AFK Bot",
+  "bot-account": {
+    "username": "PlayerBot",
+    "password": "",
+    "type": "offline"
+  },
+  "server": {
+    "ip": "yourserver.aternos.me",
+    "port": 25565,
+    "version": "",
+    "try-creative": false
+  },
+  "position": {
+    "enabled": false,
+    "x": 0,
+    "y": 100,
+    "z": 0
+  },
+  "utils": {
+    "auto-auth": {
+      "enabled": false,
+      "password": ""
+    },
+    "anti-afk": {
+      "enabled": true,
+      "sneak": true
+    },
+    "chat-messages": {
+      "enabled": false,
+      "repeat": true,
+      "repeat-delay": 120,
+      "messages": [
+        "Come play with us!"
+      ]
+    },
+    "chat-log": true,
+    "auto-reconnect": true,
+    "auto-reconnect-delay": 2000,
+    "max-reconnect-delay": 120000,
+    "periodic-rejoin": {
+      "enabled": false,
+      "min-interval": 20,
+      "max-interval": 60
+    }
+  },
+  "movement": {
+    "enabled": true,
+    "circle-walk": {
+      "enabled": true,
+      "radius": 4,
+      "speed": 3000
+    },
+    "look-around": {
+      "enabled": true,
+      "interval": 5000
+    },
+    "random-jump": {
+      "enabled": false,
+      "interval": 10000
+    }
+  },
+  "modules": {
+    "avoidMobs": false,
+    "combat": false,
+    "beds": false,
+    "chat": true,
+    "console-commands": true
+  },
+  "combat": {
+    "attack-mobs": true,
+    "auto-eat": true
+  },
+  "beds": {
+    "pick-up-day": false,
+    "place-night": false
+  },
+  "discord": {
+    "enabled": false,
+    "webhookUrl": "",
+    "events": {
+      "connect": true,
+      "disconnect": true,
+      "chat": false
+    }
+  },
+  "telegram": {
+    "enabled": false,
+    "botToken": "",
+    "chatId": "",
+    "events": {
+      "connect": true,
+      "disconnect": true,
+      "kick": true,
+      "errors": false
+    }
+  },
+  "dashboard": {
+    "enabled": true,
+    "password": "changeme",
+    "title": "Aternos Bot Panel"
+  },
+  "chat": {
+    "respond": true
+  }
+}
